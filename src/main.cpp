@@ -31,6 +31,9 @@ void InitGL() {
         -(float)WND_W / 2.0f, (float)WND_W / 2.0f,
         (float)WND_H / 2.0f, -(float)WND_H / 2.0f
     );
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void DestroyGL() {
@@ -58,12 +61,14 @@ int main() {
     ball.Load(quad_vertices);
     ball.pos = glm::vec2(0.0f);
     ball.size = glm::vec2(50.0f);
+    ball.color = glm::vec4(0.6f, 0.5f, 0.3f, 1.0f);
 
     MainLoop(
         TIMESTEP,
         window,
         // Fixed
         [&]() {
+            ball.UpdateModel();
         },
         // Render
         [&]() {

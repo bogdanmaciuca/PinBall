@@ -28,7 +28,8 @@ constexpr const char* BALL_FS = R"GLSL(
 
     void main() {
         // This requires that the vertices do not go over +-0.5f!
-        float color_coef = length(2 * FragPos);
+        if (length(FragPos) >= 0.5) discard;
+        float color_coef = 1 - pow(length(1 * FragPos), 2);
         oFragColor = vec4(uColor.xyz * color_coef, 1.0);
     }
 )GLSL";

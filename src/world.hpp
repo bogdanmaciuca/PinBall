@@ -5,5 +5,6 @@
 struct World {
     Object ball;
 
+    void UpdateModels();
 };
 

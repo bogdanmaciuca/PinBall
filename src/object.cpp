@@ -12,7 +12,8 @@ Object::~Object() {
 }
 
 void Object::Load(std::span<Vertex> vertices) {
-    m_vertex_count = static_cast<int>(vertices.size());
+    m_vertices.resize(vertices.size());
+    std::copy(vertices.begin(), vertices.end(), m_vertices.begin());
 
     if (m_vao == 0) {
         glGenVertexArrays(1, &m_vao);
@@ -73,11 +74,12 @@ void Object::Draw() {
     using namespace glm;
     m_shader->Bind();
 
-    m_shader->Set("uModel", m_model);
     m_shader->Set("uProj", g_proj);
+    m_shader->Set("uModel", m_model);
+    m_shader->Set("uColor", color);
 
     glBindVertexArray(m_vao);
-    glDrawArrays(GL_TRIANGLES, 0, m_vertex_count);
+    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
     glBindVertexArray(0);
 }
 

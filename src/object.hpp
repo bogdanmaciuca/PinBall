@@ -19,13 +19,13 @@ struct Object {
     void Load(std::span<Vertex> vertices);
     void Draw();
     void UpdateModel();
-    std::span<Vertex> GetWorldVertices();
+
+    std::span<const glm::vec2> GetWorldVertices() const { return m_world_vertices; }
 private:
-    Shader*   m_shader       = nullptr;
-    GLuint    m_vao          = 0;
-    GLuint    m_vbo          = 0;
-    int       m_vertex_count = 0;
-    glm::mat4 m_model        = glm::mat4(1.0f);
+    Shader*   m_shader = nullptr;
+    GLuint    m_vao    = 0;
+    GLuint    m_vbo    = 0;
+    glm::mat4 m_model  = glm::mat4(1.0f);
     std::vector<Vertex>    m_vertices;
     std::vector<glm::vec2> m_world_vertices;
 };
