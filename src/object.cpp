@@ -53,20 +53,29 @@ void Object::Load(std::span<Vertex> vertices) {
     glBindVertexArray(0);
 }
 
-void Object::Draw() {
+void Object::UpdateModel() {
     using namespace glm;
 
-    mat4 model =
+    m_model =
         translate(mat4(1.0f), vec3(pos.x, pos.y, 0.0f)) *       // Translate
         rotate(mat4(1.0f), angle, vec3(0.0f, 0.0f, 1.0f)) *     // Rotate
         scale(mat4(1.0f), vec3(size.x, size.y, 0.0f)) *         // Scale
         translate(mat4(1.0f), -vec3(center.x, center.y, 0.0f)); // Center of rotation
-    m_shader.Bind();
-    m_shader.Set("uModel", model);
-    m_shader.Set("uProj", g_proj);
 
-    // m_shader.Set("uModel", mat4(1));
-    // m_shader.Set("uProj", mat4(1));
+    m_world_vertices.resize(m_vertices.size());
+    for (uint32_t i = 0; i < m_vertices.size(); i++) {
+        vec4 v = m_model * vec4(m_vertices[i].pos.x, m_vertices[i].pos.y, 0.0f, 1.0f);
+        m_world_vertices[i] = vec2(v.x, v.y);
+    }
+}
+
+void Object::Draw() {
+    using namespace glm;
+    m_shader->Bind();
+
+    m_shader->Set("uModel", m_model);
+    m_shader->Set("uProj", g_proj);
+
     glBindVertexArray(m_vao);
     glDrawArrays(GL_TRIANGLES, 0, m_vertex_count);
     glBindVertexArray(0);
