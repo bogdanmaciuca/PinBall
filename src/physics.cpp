@@ -1,26 +1,65 @@
 #include "physics.hpp"
 
-Physics::Physics(
-    Shader &marble_shader, Shader &paddle_shader, 
-    Shader &border_shader, Shader &ball_shader,
-    Shader &triangle_shader, int ball_count, int triangle_count
-) : marble(marble_shader), paddle_left(paddle_shader), 
-paddle_right(paddle_shader), border(border_shader){
+namespace {
+    bool CheckImpactBallToPoligon(Object &marble, const Object &terrain){
+        for (int i = 0; i < terrain.GetWorldVertices().size(); i++){
+            glm::vec2 closest_pt = glm::closestPointOnLine(marble.pos, terrain.GetWorldVertices()[i], terrain.GetWorldVertices()[i+1]);
+            if(marble.size[0] > glm::distance(marble.pos, closest_pt)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    bool CheckImpactBallToBall(Object &marble, const Object &terrain){
+        for (int i = 0; i < terrain.GetWorldVertices().size(); i++){
+            glm::vec2 closest_pt = glm::closestPointOnLine(marble.pos, terrain.GetWorldVertices()[i], terrain.GetWorldVertices()[i+1]);
+            if(marble.size[0] > glm::distance(marble.pos, closest_pt)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    void CalculateImpactBallToPoligon(Object &marble, const Object &terrain){
 
-    while(ball_count){
-        balls.emplace_back(ball_shader);
-        ball_count--;
     }
 
-    while(triangle_count){
-        triangles.emplace_back(triangle_shader);
-        triangle_count--;
+    void CalculateImpactBallToBall(Object &marble, const Object &terrain){
+
+    }
+
+    void Integrate(Object &marble){
+
     }
 }
 
-void CheckImpact();
-void ClaculateImpact();
-void Integrate();
+void PhysicsUpdate(World &world){
+    if (CheckImpactBallToPoligon(world.marble, world.border)){
+        CalculateImpactBallToPoligon(world.marble, world.border);
+    }
 
 
-// void PhysicsUpdate(World &world);
+    if (CheckImpactBallToPoligon(world.marble, world.paddle_left)){
+        CalculateImpactBallToPoligon(world.marble, world.paddle_left);
+    }
+    
+
+    if (CheckImpactBallToPoligon(world.marble, world.paddle_right)){
+        CalculateImpactBallToPoligon(world.marble, world.paddle_right);
+    }
+
+    for (int i = 0; i < world.triangles.size(); i++){
+        if(CheckImpactBallToPoligon(world.marble, world.triangles[i])){
+            CalculateImpactBallToPoligon(world.marble, world.triangles[i]);
+        }
+    }
+
+    for (int i = 0; i < world.balls.size(); i++){
+        if(CheckImpactBallToBall(world.marble, world.balls[i])){
+            CalculateImpactBallToBall(world.marble, world.balls[i]);
+        }
+    }
+
+    Integrate(world.marble);
+}

@@ -19,7 +19,7 @@ struct Object {
     void Load(std::span<Vertex> vertices);
     void Draw();
     void UpdateModel();
-    std::span<Vertex> GetWorldVertices();
+    std::span<const glm::vec2> GetWorldVertices() const { return m_world_vertices; };
 private:
     Shader*   m_shader       = nullptr;
     GLuint    m_vao          = 0;
