@@ -1,6 +1,8 @@
-#include "vao.hpp"
+#include "object.hpp"
 
-VAO::~VAO() {
+#include "globals.hpp"
+
+Object::~Object() {
     if (m_vao != 0) {
         glDeleteVertexArrays(1, &m_vao);
     }
@@ -9,7 +11,7 @@ VAO::~VAO() {
     }
 }
 
-void VAO::Load(std::span<Vertex> vertices) {
+void Object::Load(std::span<Vertex> vertices) {
     m_vertex_count = static_cast<int>(vertices.size());
 
     if (m_vao == 0) {
@@ -51,8 +53,22 @@ void VAO::Load(std::span<Vertex> vertices) {
     glBindVertexArray(0);
 }
 
-void VAO::Draw() {
+void Object::Draw() {
+    using namespace glm;
+
+    mat4 model =
+        translate(mat4(1.0f), vec3(pos.x, pos.y, 0.0f)) *       // Translate
+        rotate(mat4(1.0f), angle, vec3(0.0f, 0.0f, 1.0f)) *     // Rotate
+        scale(mat4(1.0f), vec3(size.x, size.y, 0.0f)) *         // Scale
+        translate(mat4(1.0f), -vec3(center.x, center.y, 0.0f)); // Center of rotation
+    m_shader.Bind();
+    m_shader.Set("uModel", model);
+    m_shader.Set("uProj", g_proj);
+
+    // m_shader.Set("uModel", mat4(1));
+    // m_shader.Set("uProj", mat4(1));
     glBindVertexArray(m_vao);
     glDrawArrays(GL_TRIANGLES, 0, m_vertex_count);
     glBindVertexArray(0);
 }
+

@@ -1,18 +1,17 @@
+#include "globals.hpp"
 #include "main_loop.hpp"
 #include "shader.hpp"
 #include "shader_sources.hpp"
-#include "vao.hpp"
-
-constexpr auto WND_W = 1200.0f;
-constexpr auto WND_H = 800.0f;
-constexpr auto TIMESTEP = 1.0f / 120.0f;
+#include "object.hpp"
 
 GLFWwindow* window;
-glm::mat4 proj = glm::ortho(0.0f, WND_W, WND_H, 0.0f);
 
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
-    proj = glm::ortho(0.0f, (float)width, (float)height, 0.0f);
+    g_proj = glm::ortho(
+        -(float)width / 2.0f, (float)width / 2.0f,
+        (float)height / 2.0f, -(float)height / 2.0f
+    );
 }
 
 void InitGL() {
@@ -27,6 +26,11 @@ void InitGL() {
     glfwMakeContextCurrent(window);
 
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+    g_proj = glm::ortho(
+        -(float)WND_W / 2.0f, (float)WND_W / 2.0f,
+        (float)WND_H / 2.0f, -(float)WND_H / 2.0f
+    );
 }
 
 void DestroyGL() {
@@ -50,8 +54,10 @@ int main() {
         Vertex{ .pos = glm::vec2(-0.5f, +0.5f) },
     };
 
-    VAO quad;
-    quad.Load(quad_vertices);
+    Object ball(ball_shader);
+    ball.Load(quad_vertices);
+    ball.pos = glm::vec2(200.0f, 200.0f);
+    ball.size = glm::vec2(300.0f, 150.0f);
 
     MainLoop(
         TIMESTEP,
@@ -62,11 +68,7 @@ int main() {
         // Render
         [&]() {
             glClear(GL_COLOR_BUFFER_BIT);
-            ball_shader.Bind();
-            // ball_shader.Set("uProj", glm::scale(glm::mat4(1.0f), glm::vec3(100.0f)) * proj);
-            ball_shader.Set("uProj", glm::mat4(1));
-            ball_shader.Set("uColor", glm::vec4(1.0f, 0.0f, 0.2f, 1.0f));
-            quad.Draw();
+            ball.Draw();
         }
     );
 }
