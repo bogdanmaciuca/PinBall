@@ -56,8 +56,8 @@ int main() {
 
     Object ball(ball_shader);
     ball.Load(quad_vertices);
-    ball.pos = glm::vec2(200.0f, 200.0f);
-    ball.size = glm::vec2(300.0f, 150.0f);
+    ball.pos = glm::vec2(0.0f);
+    ball.size = glm::vec2(50.0f);
 
     MainLoop(
         TIMESTEP,
