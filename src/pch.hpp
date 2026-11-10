@@ -5,6 +5,7 @@
 #include <functional>
 #include <sstream>
 #include <print>
+#include <vector>
 
 #include "GLFW/glfw3.h"
 #include "glad/glad.h"
