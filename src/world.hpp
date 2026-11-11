@@ -3,8 +3,11 @@
 #include "object.hpp"
 
 struct World {
-    Object ball;
-
-    void UpdateModels();
+    Object marble;
+    Object paddle_left;
+    Object paddle_right;
+    Object border;
+    std::vector<Object> balls;
+    std::vector<Object> triangles;
 };
 
