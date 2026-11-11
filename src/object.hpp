@@ -20,8 +20,7 @@ struct Object {
     glm::vec4 color  = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
     ObjectPhysicsType physics_type = OPT_POLY;
 
-    glm::vec2 force     = glm::vec2(0.0f);
-    glm::vec2 new_force = glm::vec2(0.0f);
+    glm::vec2 velocity = glm::vec2(0.0f);
 
     Object() = default;
     Object(Shader* shader, ObjectPhysicsType opt = OPT_POLY) : physics_type(opt), m_shader(shader) {}

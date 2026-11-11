@@ -71,7 +71,6 @@ void Object::UpdateModel() {
 }
 
 void Object::Draw() {
-    using namespace glm;
     m_shader->Bind();
 
     m_shader->Set("uProj", g_proj);

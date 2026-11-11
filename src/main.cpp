@@ -3,6 +3,7 @@
 #include "shader.hpp"
 #include "shader_sources.hpp"
 #include "object.hpp"
+#include "world.hpp"
 
 GLFWwindow* window;
 
@@ -45,48 +46,20 @@ int main() {
 
     glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
 
-    Shader shader;
-    shader.Load(BORDER_VS, BORDER_FS);
-
-    std::array vertices = {
-        // Flipper / Drain area (now at the top)
-        Vertex{ .pos = glm::vec2(-0.23f,  0.5f) },  
-
-        // Left wall
-        Vertex{ .pos = glm::vec2(-0.37f,  0.19f) }, 
-        Vertex{ .pos = glm::vec2(-0.37f, -0.21f) }, 
-
-        // Arch / Dome (now at the bottom)
-        Vertex{ .pos = glm::vec2(-0.26f, -0.41f) }, 
-        Vertex{ .pos = glm::vec2( 0.0f,  -0.5f) },  // Bottom apex
-        Vertex{ .pos = glm::vec2( 0.26f, -0.41f) }, 
-
-        // Right wall
-        Vertex{ .pos = glm::vec2( 0.37f, -0.21f) }, 
-        Vertex{ .pos = glm::vec2( 0.37f,  0.19f) }, 
-
-        // Closing back to start
-        Vertex{ .pos = glm::vec2( 0.23f,  0.5f) },  
-        Vertex{ .pos = glm::vec2(-0.23f,  0.5f) }   
-    };
-
-    Object ball(&shader);
-    ball.Load(MakeLinePoly(vertices, 0.005f));
-    ball.pos = glm::vec2(0.0f);
-    ball.size = glm::vec2(WND_H * 0.9f);
-    ball.color = glm::vec4(0.6f, 0.5f, 0.3f, 1.0f);
+    World world;
 
     MainLoop(
         TIMESTEP,
         window,
         // Fixed
         [&]() {
-            ball.UpdateModel();
+            world.UpdateModels();
+            world.UpdatePhysics();
         },
         // Render
         [&]() {
             glClear(GL_COLOR_BUFFER_BIT);
-            ball.Draw();
+            world.Render();
         }
     );
 }
