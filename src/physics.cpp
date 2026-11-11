@@ -37,6 +37,8 @@ namespace {
     }
 
     void Integrate(Object &marble){
+        float drag_coeficient = 1.0f;
+        marble.new_force -= glm::normalize(marble.new_force) * drag_coeficient * TIMESTEP + GRAVITY * TIMESTEP;
         marble.force = marble.new_force;
 
         marble.pos += marble.force * TIMESTEP;
