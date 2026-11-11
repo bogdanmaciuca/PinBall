@@ -7,16 +7,23 @@ struct Vertex {
     glm::vec4 color;
 };
 
+enum ObjectPhysicsType {
+    OPT_BALL,
+    OPT_POLY,
+};
+
 struct Object {
     float     angle  = 0.0f;            // Radians
     glm::vec2 pos    = glm::vec2(0.0f); // In pixels
     glm::vec2 size   = glm::vec2(0.0f); // In pixels
     glm::vec2 center = glm::vec2(0.0f); // Relative to the vertices without scaling
     glm::vec4 color  = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
+    ObjectPhysicsType physics_type = OPT_POLY;
 
-    Object(Shader& shader) : m_shader(&shader) {}
+    Object() = default;
+    Object(Shader* shader, ObjectPhysicsType opt = OPT_POLY) : physics_type(opt), m_shader(shader) {}
     ~Object();
-    void Load(std::span<Vertex> vertices);
+    void Load(std::span<const Vertex> vertices);
     void Draw();
     void UpdateModel();
 
@@ -29,4 +36,6 @@ private:
     std::vector<Vertex>    m_vertices;
     std::vector<glm::vec2> m_world_vertices;
 };
+
+std::vector<Vertex> MakeLinePoly(std::span<const Vertex> vertices, float line_width);
 

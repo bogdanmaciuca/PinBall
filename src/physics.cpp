@@ -1,7 +1,9 @@
-#include "physics.hpp"
+#include "world.hpp"
+
+#include "object.hpp"
 
 namespace {
-    bool CheckImpactBallToPoligon(Object &marble, const Object &terrain){
+    bool CheckBallPolygonCollision(Object &marble, const Object &terrain){
         for (int i = 0; i < terrain.GetWorldVertices().size(); i++){
             glm::vec2 closest_pt = glm::closestPointOnLine(marble.pos, terrain.GetWorldVertices()[i], terrain.GetWorldVertices()[i+1]);
             if(marble.size[0] > glm::distance(marble.pos, closest_pt)){
@@ -10,8 +12,8 @@ namespace {
         }
         return false;
     }
-    
-    bool CheckImpactBallToBall(Object &marble, const Object &terrain){
+
+    bool CheckBallBallCollision(Object &marble, const Object &terrain){
         for (int i = 0; i < terrain.GetWorldVertices().size(); i++){
             glm::vec2 closest_pt = glm::closestPointOnLine(marble.pos, terrain.GetWorldVertices()[i], terrain.GetWorldVertices()[i+1]);
             if(marble.size[0] > glm::distance(marble.pos, closest_pt)){
@@ -20,13 +22,31 @@ namespace {
         }
         return false;
     }
-    
-    void CalculateImpactBallToPoligon(Object &marble, const Object &terrain){
+
+    bool CheckCollision(Object& o1, Object& o2) {
+        if (o1.physics_type == OPT_BALL && o2.physics_type == OPT_BALL) {
+            return CheckBallBallCollision(o1, o2);
+        }
+        else if (o1.physics_type == OPT_BALL && o2.physics_type == OPT_POLY) {
+            return CheckBallPolygonCollision(o1, o2);
+        }
+    }
+
+    void ResolveBallPolygonCollision(Object &marble, const Object &terrain){
 
     }
 
-    void CalculateImpactBallToBall(Object &marble, const Object &terrain){
+    void ResolveBallBallCollision(Object &marble, const Object &terrain){
 
+    }
+
+    void ResolveCollision(Object& o1, Object& o2) {
+        if (o1.physics_type == OPT_BALL && o2.physics_type == OPT_BALL) {
+            ResolveBallBallCollision(o1, o2);
+        }
+        else if (o1.physics_type == OPT_BALL && o2.physics_type == OPT_POLY) {
+            ResolveBallPolygonCollision(o1, o2);
+        }
     }
 
     void Integrate(Object &marble){
@@ -34,32 +54,11 @@ namespace {
     }
 }
 
-void PhysicsUpdate(World &world){
-    if (CheckImpactBallToPoligon(world.marble, world.border)){
-        CalculateImpactBallToPoligon(world.marble, world.border);
+void World::UpdatePhysics(){
+    for (int i = 0; i < m_objects.size(); i++) {
+        if (i == m_marble_id) continue;
+        ResolveCollision(Marble(), m_objects[i]);
     }
 
-
-    if (CheckImpactBallToPoligon(world.marble, world.paddle_left)){
-        CalculateImpactBallToPoligon(world.marble, world.paddle_left);
-    }
-    
-
-    if (CheckImpactBallToPoligon(world.marble, world.paddle_right)){
-        CalculateImpactBallToPoligon(world.marble, world.paddle_right);
-    }
-
-    for (int i = 0; i < world.triangles.size(); i++){
-        if(CheckImpactBallToPoligon(world.marble, world.triangles[i])){
-            CalculateImpactBallToPoligon(world.marble, world.triangles[i]);
-        }
-    }
-
-    for (int i = 0; i < world.balls.size(); i++){
-        if(CheckImpactBallToBall(world.marble, world.balls[i])){
-            CalculateImpactBallToBall(world.marble, world.balls[i]);
-        }
-    }
-
-    Integrate(world.marble);
+    Integrate(Marble());
 }
