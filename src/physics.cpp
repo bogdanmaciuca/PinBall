@@ -22,14 +22,27 @@ namespace {
         int vertice_count = terrain.GetWorldVertices().size();
         for (int i = 0; i < vertice_count; i++){
             glm::vec2 closest_pt = closestPointOnSegment(marble.pos, terrain.GetWorldVertices()[i], terrain.GetWorldVertices()[(i+1) % vertice_count]);
-            if(marble.size[0] > glm::distance(marble.pos, closest_pt)){
+            if(marble.size.x / 2 > glm::distance(marble.pos, closest_pt)){
+
+                glm::vec2 d = marble.pos - closest_pt;
+                float dist = glm::length(d);
+                marble.pos += d / dist * (marble.size.x / 2 - dist);
+
                 ResolveCollision(marble, closest_pt);
+                
+                if(glm::distance(terrain.GetWorldVertices()[(i+1) % vertice_count], closest_pt) < 0.0001f){
+                    i++;
+                }
             }
         }
     }
 
     void CheckBallBallCollision(Object &marble, const Object &terrain){
-        if(marble.size[0] > glm::distance(marble.pos, terrain.pos)){
+        if(marble.size.x > glm::distance(marble.pos, terrain.pos)){
+            glm::vec2 d = marble.pos - terrain.pos;
+            float dist = glm::length(d);
+            marble.pos += d / dist * (marble.size.x / 2 + terrain.size.x / 2 - dist);
+
             ResolveCollision(marble, terrain.pos);
         }
     }
@@ -46,13 +59,21 @@ namespace {
     void Integrate(Object &marble){
         float drag_coeficient = 1.0f;
 
+        if(glm::length(normal) > 0.0001f){
+            normal = glm::normalize(normal);
+            // float vn = glm::dot(marble.velocity, normal);
+            // if (vn < 0.0f) {                      // only if moving into the wall
+            //     marble.velocity -= 2.0f * vn * normal;
+            // }
+        }
+
         marble.velocity -= 2.0f * glm::dot(marble.velocity, normal) * normal; // new direction
 
         if (glm::length(marble.velocity) > 0.0001f) {
             marble.velocity -= glm::normalize(marble.velocity) * drag_coeficient * TIMESTEP;
         }
 
-        marble.velocity -= GRAVITY * TIMESTEP;
+        marble.velocity += GRAVITY * TIMESTEP;
 
         marble.pos += marble.velocity * TIMESTEP;
     }
