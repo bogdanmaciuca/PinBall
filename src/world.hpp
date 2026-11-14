@@ -10,6 +10,7 @@ struct World {
     void Render();
 private:
     Shader m_marble_shader;
+    Shader m_border_shader;
 
     uint32_t m_marble_id;
     uint32_t m_pad_left_id;
