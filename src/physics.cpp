@@ -12,6 +12,12 @@ namespace {
 
     glm::vec2 normal(0.0f);
 
+    void ResolveCollision(Object& marble, glm::vec2 collision_point){
+        glm::vec2 normal_vector = glm::normalize(marble.pos - collision_point);
+        // glm::vec2 force_modifier = 2 * glm::dot(marble.velocity, normal_vector) * normal_vector;
+        normal += normal_vector;
+    }
+
     void CheckBallPolygonCollision(Object &marble, const Object &terrain){
         int vertice_count = terrain.GetWorldVertices().size();
         for (int i = 0; i < vertice_count; i++){
@@ -37,24 +43,18 @@ namespace {
         }
     }
 
-    void ResolveCollision(Object& marble, glm::vec2 collision_point){
-        glm::vec2 normal_vector = glm::normalize(marble.pos - collision_point);
-        // glm::vec2 force_modifier = 2 * glm::dot(marble.force, normal_vector) * normal_vector;
-        normal += normal_vector;
-    }
-
     void Integrate(Object &marble){
         float drag_coeficient = 1.0f;
 
-        marble.force -= 2.0f * glm::dot(marble.force, normal) * normal; // new direction
+        marble.velocity -= 2.0f * glm::dot(marble.velocity, normal) * normal; // new direction
 
-        if (glm::length(marble.force) > 0.0001f) {
-            marble.force -= glm::normalize(marble.force) * drag_coeficient * TIMESTEP;
+        if (glm::length(marble.velocity) > 0.0001f) {
+            marble.velocity -= glm::normalize(marble.velocity) * drag_coeficient * TIMESTEP;
         }
 
-        marble.force -= GRAVITY * TIMESTEP;
+        marble.velocity -= GRAVITY * TIMESTEP;
 
-        marble.pos += marble.force * TIMESTEP;
+        marble.pos += marble.velocity * TIMESTEP;
     }
 }
 
