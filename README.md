@@ -1,8 +1,28 @@
 # PinBall in OpenGL
 
+## [Main Loop](src/main_loop.cpp)
+
+The loop for the game.  
+
+### [MainLoop()](src/main_loop.cpp#L3-L36)
+
+Runs through the different update funcitons with a fixed timestep. 
+The update() function returns true when the game needs to reset.  
+
+## [Main](src/main.cpp)
+
+The program needs to start somewhere.  
+
+### [main()](src/main.cpp#L42-L71)
+
+ - creates the world
+ - runs the game loop
+
+## [Object](src/object.cpp)
+
 ## [World](src/world.cpp)
 
-The world that defines the rules that we work with in the game. It initializes the different models and updates their rendering and movement.
+The world that defines the rules that we work with in the game. It initializes the different models and updates their rendering and movement.  
 
 ### [World()](src/world.cpp#L12-L107)
 

@@ -66,5 +66,7 @@ int main() {
             }
         );
     }
+
+    DestroyGL();
 }
 
