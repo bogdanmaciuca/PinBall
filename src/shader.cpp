@@ -1,5 +1,20 @@
 #include "shader.hpp"
 
+Shader::Shader(Shader&& other) noexcept : m_id(other.m_id) {
+    other.m_id = 0;
+}
+
+Shader& Shader::operator=(Shader&& other) noexcept {
+    if (this != &other) {
+        if (m_id != 0) {
+            glDeleteProgram(m_id);
+        }
+        m_id = other.m_id;
+        other.m_id = 0;
+    }
+    return *this;
+}
+
 Shader::~Shader() {
     if (m_id != 0) {
         glDeleteProgram(m_id);

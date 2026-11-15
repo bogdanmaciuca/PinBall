@@ -5,8 +5,6 @@
 #include "object.hpp"
 #include "world.hpp"
 
-GLFWwindow* window;
-
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
     g_proj = glm::ortho(
@@ -21,10 +19,10 @@ void InitGL() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    window = glfwCreateWindow(WND_W, WND_H, "OpenGL App", nullptr, nullptr);
-    assert(window != nullptr);
-    glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
-    glfwMakeContextCurrent(window);
+    g_window = glfwCreateWindow(WND_W, WND_H, "OpenGL App", nullptr, nullptr);
+    assert(g_window != nullptr);
+    glfwSetFramebufferSizeCallback(g_window, FramebufferSizeCallback);
+    glfwMakeContextCurrent(g_window);
 
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
@@ -50,9 +48,10 @@ int main() {
 
     MainLoop(
         TIMESTEP,
-        window,
+        g_window,
         // Fixed
         [&]() {
+            world.UpdatePads();
             world.UpdateModels();
             world.UpdatePhysics();
         },

@@ -11,6 +11,7 @@ namespace {
     }
 
     glm::vec2 normal(0.0f);
+    constexpr float RESTITUTION = 0.7f;
 
     void ResolveCollision(Object& marble, glm::vec2 collision_point){
         glm::vec2 normal_vector = glm::normalize(marble.pos - collision_point);
@@ -67,7 +68,7 @@ namespace {
             // }
         }
 
-        marble.velocity -= 2.0f * glm::dot(marble.velocity, normal) * normal; // new direction
+        marble.velocity -= (1.0f + RESTITUTION) * glm::dot(marble.velocity, normal) * normal; // new direction
 
         if (glm::length(marble.velocity) > 0.0001f) {
             marble.velocity -= glm::normalize(marble.velocity) * drag_coeficient * TIMESTEP;
@@ -82,7 +83,7 @@ namespace {
 void World::UpdatePhysics(){
     normal = glm::vec2(0.0f);
 
-    for (int i = 0; i < m_objects.size(); i++) {
+    for (size_t i = 0; i < m_objects.size(); i++) {
         if (i == m_marble_id) continue;
         CheckCollision(Marble(), m_objects[i]);
     }

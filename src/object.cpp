@@ -2,6 +2,53 @@
 
 #include "globals.hpp"
 
+Object::Object(Object&& other) noexcept
+    : angle(other.angle),
+      pos(other.pos),
+      size(other.size),
+      center(other.center),
+      color(other.color),
+      physics_type(other.physics_type),
+      velocity(other.velocity),
+      m_shader(other.m_shader),
+      m_vao(other.m_vao),
+      m_vbo(other.m_vbo),
+      m_model(other.m_model),
+      m_vertices(std::move(other.m_vertices)),
+      m_world_vertices(std::move(other.m_world_vertices)) {
+    other.m_shader = nullptr;
+    other.m_vao = 0;
+    other.m_vbo = 0;
+}
+
+Object& Object::operator=(Object&& other) noexcept {
+    if (this != &other) {
+        if (m_vao != 0) {
+            glDeleteVertexArrays(1, &m_vao);
+        }
+        if (m_vbo != 0) {
+            glDeleteBuffers(1, &m_vbo);
+        }
+        angle = other.angle;
+        pos = other.pos;
+        size = other.size;
+        center = other.center;
+        color = other.color;
+        physics_type = other.physics_type;
+        velocity = other.velocity;
+        m_shader = other.m_shader;
+        m_vao = other.m_vao;
+        m_vbo = other.m_vbo;
+        m_model = other.m_model;
+        m_vertices = std::move(other.m_vertices);
+        m_world_vertices = std::move(other.m_world_vertices);
+        other.m_shader = nullptr;
+        other.m_vao = 0;
+        other.m_vbo = 0;
+    }
+    return *this;
+}
+
 Object::~Object() {
     if (m_vao != 0) {
         glDeleteVertexArrays(1, &m_vao);

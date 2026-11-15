@@ -24,6 +24,10 @@ struct Object {
 
     Object() = default;
     Object(Shader* shader, ObjectPhysicsType opt = OPT_POLY) : physics_type(opt), m_shader(shader) {}
+    Object(const Object&) = delete;
+    Object& operator=(const Object&) = delete;
+    Object(Object&& other) noexcept;
+    Object& operator=(Object&& other) noexcept;
     ~Object();
     void Load(std::span<const Vertex> vertices);
     void Draw();

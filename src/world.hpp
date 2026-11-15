@@ -7,6 +7,7 @@ struct World {
     World();
     void UpdateModels();
     void UpdatePhysics();
+    void UpdatePads();
     void Render();
 private:
     Shader m_marble_shader;
