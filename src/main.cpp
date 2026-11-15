@@ -44,22 +44,38 @@ int main() {
 
     glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
 
-    World world;
+    while (!glfwWindowShouldClose(g_window)) {
 
-    MainLoop(
-        TIMESTEP,
-        g_window,
-        // Fixed
-        [&]() {
-            world.UpdatePads();
-            world.UpdateModels();
-            world.UpdatePhysics();
-        },
-        // Render
-        [&]() {
-            glClear(GL_COLOR_BUFFER_BIT);
-            world.Render();
-        }
-    );
+        bool reset = false;
+
+        {
+            World world;
+
+            reset = MainLoop(
+                TIMESTEP,
+                g_window,
+
+                // Fixed
+                [&]() {
+                    world.UpdatePads();
+                    world.UpdateModels();
+                    world.UpdatePhysics();
+
+                    return world.ShouldReset();
+                },
+
+                // Render
+                [&]() {
+                    glClear(GL_COLOR_BUFFER_BIT);
+                    world.Render();
+                }
+            );
+        } // World is destroyed here!
+
+        if (!reset)
+            break;
+    }
+
+    DestroyGL();
 }
 

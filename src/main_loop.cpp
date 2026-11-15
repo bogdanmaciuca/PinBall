@@ -1,6 +1,6 @@
 #include "main_loop.hpp"
 
-void MainLoop(float fixed_timestep, GLFWwindow* window, std::function<void()> update, std::function<void()> render) {
+bool MainLoop(float fixed_timestep, GLFWwindow* window, std::function<bool()> update, std::function<void()> render) {
     using clock = std::chrono::high_resolution_clock;
 
     auto previous_time = clock::now();
@@ -21,7 +21,9 @@ void MainLoop(float fixed_timestep, GLFWwindow* window, std::function<void()> up
 
         glfwPollEvents();
         while (accumulator >= fixed_timestep) {
-            update();
+            if(update()){
+                return true;
+            }
             accumulator -= fixed_timestep;
         }
 
@@ -29,5 +31,7 @@ void MainLoop(float fixed_timestep, GLFWwindow* window, std::function<void()> up
         render();
         glfwSwapBuffers(window);
     }
+
+    return false;
 }
 

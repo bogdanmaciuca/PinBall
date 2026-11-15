@@ -52,6 +52,15 @@ World::World() {
     }, 0.005f));
     Border().size  = glm::vec2(700.0f);
     Border().color = glm::vec4(0.3f, 0.9f, 0.4f, 1.0f);
+    // Drain
+    m_objects.emplace_back(&m_border_shader, OPT_POLY);
+    m_drain_id = m_objects.size() - 1;
+    Drain().Load(MakeLinePoly(std::array{
+        Vertex{ .pos = glm::vec2( 0.23f, 0.5f) },
+        Vertex{ .pos = glm::vec2(-0.23f, 0.5f) }
+    }, 0.01f));
+    Drain().size  = glm::vec2(700.0f);
+    Drain().color = glm::vec4(0.7f, 0.1f, 0.1f, 1.0f);
 
     // Flippers
     auto flipper_vertices = [](float direction) {
@@ -90,9 +99,11 @@ World::World() {
         Object& obstacle = m_objects.emplace_back(&m_marble_shader, OPT_BALL);
         obstacle.Load(quad_vertices);
         obstacle.pos = position;
-        obstacle.size = glm::vec2(50.0f);
+        obstacle.size = glm::vec2(30.0f);
         obstacle.color = glm::vec4(0.9f, 0.1f, 0.0f, 1.0f);
     }
+
+    reset_game = false;
 }
 
 void World::UpdateModels() {

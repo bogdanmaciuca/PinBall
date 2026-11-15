@@ -9,6 +9,7 @@ struct World {
     void UpdatePhysics();
     void UpdatePads();
     void Render();
+    bool ShouldReset() const {return reset_game;}
 private:
     Shader m_marble_shader;
     Shader m_border_shader;
@@ -17,11 +18,15 @@ private:
     uint32_t m_pad_left_id;
     uint32_t m_pad_right_id;
     uint32_t m_border_id;
+    uint32_t m_drain_id;
     std::vector<Object> m_objects;
+
+    bool reset_game;
 
     Object& Marble() { return m_objects[m_marble_id]; };
     Object& PadLeft() { return m_objects[m_pad_left_id]; };
     Object& PadRight() { return m_objects[m_pad_right_id]; };
     Object& Border() { return m_objects[m_border_id]; };
+    Object& Drain() { return m_objects[m_drain_id]; };
 };
 

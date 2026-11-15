@@ -113,8 +113,13 @@ void World::UpdatePhysics(){
     surface_velocity = glm::vec2(0.0f);
     collision_count = 0;
 
+    if (CheckCollision(Marble(), m_objects[m_drain_id])){
+        reset_game = true;
+        return;
+    }
+
     for (size_t i = 0; i < m_objects.size(); i++) {
-        if (i == m_marble_id) continue;
+        if (i == m_marble_id || i == m_drain_id) continue;
         CheckCollision(Marble(), m_objects[i]);
     }
 
