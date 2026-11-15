@@ -103,6 +103,7 @@ void World::UpdateModels() {
 
 void World::UpdatePads() {
     auto move_toward = [](Object& pad, float target) {
+        float old_angle = pad.angle;
         float step = ANGULAR_SPEED * TIMESTEP;
         float diff = target - pad.angle;
         if (glm::abs(diff) <= step) {
@@ -110,6 +111,7 @@ void World::UpdatePads() {
         } else {
             pad.angle += glm::sign(diff) * step;
         }
+        pad.angular_velocity = (pad.angle - old_angle) / TIMESTEP;
     };
 
     bool left_pressed = glfwGetKey(g_window, GLFW_KEY_A) == GLFW_PRESS
