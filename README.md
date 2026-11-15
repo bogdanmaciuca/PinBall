@@ -1,5 +1,26 @@
 # PinBall in OpenGL
 
+## [World](src/world.cpp)
+
+The world that defines the rules that we work with in the game. It initializes the different models and updates their rendering and movement.
+
+### [World()](src/world.cpp#L12-L107)
+
+Initializes the Marble, the Edge, the Drain, the Two Paddles and any obstacles we desire.
+
+### [UpdateModels()](src/world.cpp#L109-L113)
+
+Calls the [UpdateModel()](#) function for every model.
+
+### [UpdatePads()](src/world.cpp#L115-135)
+
+Detects keyboard presses and updates the rotation ot the paddles acodingly.  
+The move_towards() lambda funciton updates the padle's rotation and angular velocity.  
+
+### [Render()](src/world.cpp#L137-L142)
+
+Draws each model.  
+
 ## [Physics](src/physics.cpp)
 
 In physics.cpp is where the ball's collisions and movement is calculated.
