@@ -80,12 +80,11 @@ namespace {
     }
 
     void Integrate(Object &marble){
-        float drag_coeficient = 1.0f;
+        float drag_coeficient = 0.9f;
 
         if(glm::length(normal) > 0.0001f){
             normal = glm::normalize(normal);
-            glm::vec2 avg_surface_velocity =
-            surface_velocity / (float)collision_count;
+            glm::vec2 avg_surface_velocity = surface_velocity / (float)collision_count;
 
             glm::vec2 relative_velocity = marble.velocity - avg_surface_velocity;
 
