@@ -87,8 +87,7 @@ namespace {
             glm::vec2 avg_surface_velocity =
             surface_velocity / (float)collision_count;
 
-            glm::vec2 relative_velocity =
-                marble.velocity - avg_surface_velocity;
+            glm::vec2 relative_velocity = marble.velocity - avg_surface_velocity;
 
             float vn = glm::dot(relative_velocity, normal);
 
@@ -113,7 +112,7 @@ void World::UpdatePhysics(){
     surface_velocity = glm::vec2(0.0f);
     collision_count = 0;
 
-    if (CheckCollision(Marble(), m_objects[m_drain_id])){
+    if (CheckCollision(Marble(), Drain())){
         reset_game = true;
         return;
     }
