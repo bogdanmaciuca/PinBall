@@ -38,7 +38,7 @@ After that we check the surface velocity compared to the marble. As we only have
 Since my search gave me conflicting information on if glm::closestPointOnLine() clamps the result to the serment line or not, and my intuition said probably not, this function was implemented in order to resolve the issue.  
 it calculates the following formula $\frac{(p-a)^2 \cdot (b-a)^2}{||b-a||^2}$ in order to find the scalar with which we can mutiply $\vec{ab}$ to get the path from a to p. We clamp this result between 0 and 1 in order to have it remain on the segment line.
 
-### [Integrate()][src/physics.cpp#L82-L108]
+### [Integrate()](src/physics.cpp#L82-L108)
 
  - Calculates the redirected force by:
    - Normalizeing the normal 
