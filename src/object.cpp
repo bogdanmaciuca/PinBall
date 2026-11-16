@@ -192,7 +192,7 @@ std::vector<Vertex> MakeFilledPoly(std::span<const Vertex> points) {
     std::vector<Vertex> vertices;
 
     size_t segment_count = points.size() - 1;
-    vertices.reserve(segment_count * 3); // 1 triangle per segment
+    vertices.reserve((segment_count-1) * 3); // 1 triangle per segment
 
     Vertex A = { points[0].pos, points[0].color, points[0].uv };
     
