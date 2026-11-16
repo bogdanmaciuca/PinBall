@@ -47,4 +47,5 @@ private:
 };
 
 std::vector<Vertex> MakeLinePoly(std::span<const Vertex> vertices, float line_width);
+std::vector<Vertex> MakeFilledPoly(std::span<const Vertex> vertices);
 

@@ -185,3 +185,29 @@ std::vector<Vertex> MakeLinePoly(std::span<const Vertex> points, float line_widt
     return vertices;
 }
 
+
+// `points[last]` must NOT equal `points[first]`
+std::vector<Vertex> MakeFilledPoly(std::span<const Vertex> points) {
+    assert(points.size() >= 2);
+    std::vector<Vertex> vertices;
+
+    size_t segment_count = points.size() - 1;
+    vertices.reserve(segment_count * 3); // 1 triangle per segment
+
+    Vertex A = { points[0].pos, points[0].color, points[0].uv };
+    
+    for (size_t i = 1; i < segment_count; i++) {
+        const auto& p0 = points[i];
+        const auto& p1 = points[i + 1];
+
+        Vertex B = { p0.pos, p0.color, p0.uv };
+        Vertex C = { p1.pos, p1.color, p1.uv };
+
+        //ABC
+        vertices.push_back(A);
+        vertices.push_back(B);
+        vertices.push_back(C);
+    }
+
+    return vertices;
+}
