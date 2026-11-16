@@ -7,6 +7,7 @@ struct Shader {
     Shader(Shader&& other) noexcept;
     Shader& operator=(Shader&& other) noexcept;
     ~Shader();
+
     bool Load(const char* vertex_shader, const char* fragment_shader);
     void Bind();
     void Cleanup();

@@ -34,7 +34,7 @@ void InitFont() {
         return;
     }
 
-    std::streamsize size = file.tellg();
+    auto size = file.tellg();
     file.seekg(0, std::ios::beg);
     s_font_data.resize(size);
     file.read(reinterpret_cast<char*>(s_font_data.data()), size);
@@ -131,3 +131,4 @@ void DrawText(glm::vec2 pos, glm::vec4 color, const char* fmt, ...) {
 
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+

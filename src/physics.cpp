@@ -2,24 +2,27 @@
 #include "object.hpp"
 #include "world.hpp"
 
+constexpr float RESTITUTION = 0.8f;
+constexpr float DRAG_COEF  = 0.9f;
+
 namespace {
 
-    glm::vec2 closestPointOnSegment(const glm::vec2& point, const glm::vec2& a, const glm::vec2& b) {
+    glm::vec2 ClosestPointOnSegment(const glm::vec2& point, const glm::vec2& a, const glm::vec2& b) {
         glm::vec2 ab = b - a;
         float t = glm::dot(point - a, ab) / glm::dot(ab, ab);
         t = glm::clamp(t, 0.0f, 1.0f); // Clamps to the [0, 1] segment range
         return a + t * ab;
     }
 
-    glm::vec2 normal(0.0f);
-    glm::vec2 surface_velocity(0.0f);
-    int collision_count = 0;
-    constexpr float RESTITUTION = 0.8f;
+    // Specifically for marble
+    glm::vec2 s_normal(0.0f);
+    glm::vec2 s_surface_velocity(0.0f);
+    int       s_collision_count = 0;
 
     void ResolveCollision(Object& marble, const Object& terrain, glm::vec2 collision_point){
         glm::vec2 normal_vector = glm::normalize(marble.pos - collision_point);
         // glm::vec2 force_modifier = 2 * glm::dot(marble.velocity, normal_vector) * normal_vector;
-        normal += normal_vector;
+        s_normal += normal_vector;
 
         glm::vec2 r = collision_point - terrain.pos;
 
@@ -28,8 +31,8 @@ namespace {
             terrain.angular_velocity * r.x
         );
 
-        surface_velocity += velocity;
-        collision_count++;
+        s_surface_velocity += velocity;
+        s_collision_count++;
     }
 
     bool CheckBallPolygonCollision(Object &marble, const Object &terrain){
@@ -37,7 +40,8 @@ namespace {
         bool collides = false;
 
         for (int i = 0; i < vertice_count; i++){
-            glm::vec2 closest_pt = closestPointOnSegment(marble.pos, terrain.GetWorldVertices()[i], terrain.GetWorldVertices()[(i+1) % vertice_count]);
+            // glm::closestPointOnLine() also works
+            glm::vec2 closest_pt = ClosestPointOnSegment(marble.pos, terrain.GetWorldVertices()[i], terrain.GetWorldVertices()[(i+1) % vertice_count]);
             if (marble.size.x / 2 > glm::distance(marble.pos, closest_pt)){
 
                 glm::vec2 d = marble.pos - closest_pt;
@@ -45,7 +49,7 @@ namespace {
                 marble.pos += d / dist * (marble.size.x / 2 - dist);
 
                 ResolveCollision(marble, terrain, closest_pt);
-                
+
                 if(glm::distance(terrain.GetWorldVertices()[(i+1) % vertice_count], closest_pt) < 0.0001f){
                     i++;
                 }
@@ -57,7 +61,7 @@ namespace {
     }
 
     bool CheckBallBallCollision(Object &marble, const Object &terrain){
-        if((marble.size.x + terrain.size.x) / 2 > glm::distance(marble.pos, terrain.pos)){
+        if ((marble.size.x + terrain.size.x) / 2 > glm::distance(marble.pos, terrain.pos)){
             glm::vec2 d = marble.pos - terrain.pos;
             float dist = glm::length(d);
             marble.pos += d / dist * (marble.size.x / 2 + terrain.size.x / 2 - dist);
@@ -80,24 +84,22 @@ namespace {
     }
 
     void Integrate(Object &marble){
-        float drag_coeficient = 0.9f;
-
-        if(glm::length(normal) > 0.0001f){
-            normal = glm::normalize(normal);
-            glm::vec2 avg_surface_velocity = surface_velocity / (float)collision_count;
+        if(glm::length(s_normal) > 0.0001f){
+            s_normal = glm::normalize(s_normal);
+            glm::vec2 avg_surface_velocity = s_surface_velocity / (float)s_collision_count;
 
             glm::vec2 relative_velocity = marble.velocity - avg_surface_velocity;
 
-            float vn = glm::dot(relative_velocity, normal);
+            float vn = glm::dot(relative_velocity, s_normal);
 
             if (vn < 0.0f) {
-                marble.velocity -= (1.0f + RESTITUTION) * vn * normal;
+                marble.velocity -= (1.0f + RESTITUTION) * vn * s_normal;
             }
         }
         // marble.velocity -= glm::dot(marble.velocity, normal) * normal; // new direction
 
         if (glm::length(marble.velocity) > 0.0001f) {
-            marble.velocity -= glm::normalize(marble.velocity) * drag_coeficient * TIMESTEP;
+            marble.velocity -= glm::normalize(marble.velocity) * DRAG_COEF * TIMESTEP;
         }
 
         marble.velocity += GRAVITY * TIMESTEP;
@@ -107,9 +109,9 @@ namespace {
 }
 
 void World::UpdatePhysics(){
-    normal = glm::vec2(0.0f);
-    surface_velocity = glm::vec2(0.0f);
-    collision_count = 0;
+    s_normal = glm::vec2(0.0f);
+    s_surface_velocity = glm::vec2(0.0f);
+    s_collision_count = 0;
 
     if (CheckCollision(Marble(), Drain())){
         reset_game = true;

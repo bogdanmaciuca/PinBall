@@ -49,7 +49,7 @@ int main() {
     glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
 
     bool go = true;
-    while(go){
+    while (go) {
         World world;
 
         go = MainLoop(

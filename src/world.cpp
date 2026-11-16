@@ -27,9 +27,10 @@ World::World() {
     m_objects.emplace_back(&m_marble_shader, OPT_BALL);
     m_marble_id = m_objects.size() - 1;
     Marble().Load(quad_vertices);
+    Marble().pos      = glm::vec2(100.0f, -50.0f);
     Marble().size     = glm::vec2(30.0f);
     Marble().color    = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    Marble().velocity = glm::vec2(250.0f, -350.0f);
+    Marble().velocity = glm::vec2(0.0f); // glm::vec2(250.0f, -350.0f);
     // Border
     m_objects.emplace_back(&m_border_shader, OPT_POLY);
     m_border_id = m_objects.size() - 1;
@@ -105,7 +106,7 @@ World::World() {
 
     // Obstacle Triangle
     Object& triangle = m_objects.emplace_back(&m_border_shader, OPT_POLY);
-    triangle.Load(MakeFilledPoly(std::array{
+    triangle.Load(MakeFilledPoly(std::array{ // Sometimes my genius... frightens me
         Vertex{ .pos = glm::vec2( 0.0f,  0.2f)},
         Vertex{ .pos = glm::vec2(-0.02f, 0.05f)},
         Vertex{ .pos = glm::vec2( 0.02f, 0.05f)}
@@ -113,7 +114,7 @@ World::World() {
     triangle.pos = glm::vec2(0.0f, 50.0f);
     triangle.size = Border().size;
     triangle.color = glm::vec4(0.0f, 0.9f, 0.5f, 1.0f);
-    
+
     reset_game = false;
 }
 
@@ -124,7 +125,7 @@ void World::UpdateModels() {
 }
 
 void World::UpdatePads() {
-    auto move_toward = [](Object& pad, float target) {
+    auto MoveToward = [](Object& pad, float target) {
         float old_angle = pad.angle;
         float step = ANGULAR_SPEED * TIMESTEP;
         float diff = target - pad.angle;
@@ -141,14 +142,13 @@ void World::UpdatePads() {
     bool right_pressed = glfwGetKey(g_window, GLFW_KEY_D) == GLFW_PRESS
         || glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS;
 
-    move_toward(PadLeft(),  left_pressed  ? -FLIP_ANGLE :  FLIPPER_REST_TILT);
-    move_toward(PadRight(), right_pressed ?  FLIP_ANGLE : -FLIPPER_REST_TILT);
+    MoveToward(PadLeft(),  left_pressed  ? -FLIP_ANGLE :  FLIPPER_REST_TILT);
+    MoveToward(PadRight(), right_pressed ?  FLIP_ANGLE : -FLIPPER_REST_TILT);
 }
 
 void World::Render() {
     for (Object& obj : m_objects) {
         obj.Draw();
     }
-    Marble().Draw();
 }
 
