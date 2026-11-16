@@ -30,6 +30,9 @@ Objects also cache a pointer to their shader.
 [`MakeLinePoly()`](src/object.hpp#L155-L186) creates an empty polygon with variable line width out of 2 triangles per line.
 [`MakeFilledPoly()`](src/object.hpp#L190-L212) creates a fan triangulation of a polygon.
 
+## Text rendering
+We use `stb_truetype.h` for baking an atlas of all printable ASCII characters and then use an `Object` for loading the glyph quad vertices for each character. We use the metadata for the atlas for advancing on the `x` and `y` coordinates
+
 ## [World](src/world.cpp)
 
 The world that defines the all the state and logic specific to the game. It initializes the different models and updates their rendering and movement.
@@ -99,6 +102,6 @@ it calculates the following formula $\frac{(p-a) \cdot (b-a)}{||b-a||^2}$ in ord
  - Modify the position.
 
 # Contributions
-- Bogdan Maciuca: Object, Shader, MainLoop, MakeLinePoly, shader sources, paddles
+- Bogdan Maciuca: Object, Shader, MainLoop, MakeLinePoly, shader sources, paddles, font rendering
 - Andrei Barbu: Physics, game reset, MakeFilledPoly, shader sources, gameplay refined
 
