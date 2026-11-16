@@ -9,7 +9,7 @@ add_compile_options(-Wall -O0 -g)
 add_compile_definitions(GLFW_INCLUDE_NONE)
 
 # Source files
-file(GLOB SRCS src/*.cpp)
+file(GLOB SRCS src/*.cpp vendor/stb/*.cpp)
 
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -17,6 +17,8 @@ add_subdirectory(vendor/glad REQUIRED)
 
 # Create executable
 add_executable(${PROJECT_NAME} ${SRCS})
+
+target_include_directories(${PROJECT_NAME} PRIVATE vendor/stb)
 
 # PCH
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)

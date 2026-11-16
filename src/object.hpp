@@ -5,6 +5,7 @@
 struct Vertex {
     glm::vec2 pos;
     glm::vec4 color;
+    glm::vec2 uv;
 };
 
 enum ObjectPhysicsType {
@@ -20,11 +21,19 @@ struct Object {
     glm::vec4 color  = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
     ObjectPhysicsType physics_type = OPT_POLY;
 
+    glm::vec2 velocity     = glm::vec2(0.0f);
+    float angular_velocity = 0.0f;
+
     Object() = default;
     Object(Shader* shader, ObjectPhysicsType opt = OPT_POLY) : physics_type(opt), m_shader(shader) {}
+    Object(const Object&) = delete;
+    Object& operator=(const Object&) = delete;
+    Object(Object&& other) noexcept;
+    Object& operator=(Object&& other) noexcept;
     ~Object();
     void Load(std::span<const Vertex> vertices);
     void Draw();
+    void Cleanup();
     void UpdateModel();
 
     std::span<const glm::vec2> GetWorldVertices() const { return m_world_vertices; }
@@ -38,4 +47,5 @@ private:
 };
 
 std::vector<Vertex> MakeLinePoly(std::span<const Vertex> vertices, float line_width);
+std::vector<Vertex> MakeFilledPoly(std::span<const Vertex> vertices);
 

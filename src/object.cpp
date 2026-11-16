@@ -2,6 +2,53 @@
 
 #include "globals.hpp"
 
+Object::Object(Object&& other) noexcept
+    : angle(other.angle),
+      pos(other.pos),
+      size(other.size),
+      center(other.center),
+      color(other.color),
+      physics_type(other.physics_type),
+      velocity(other.velocity),
+      m_shader(other.m_shader),
+      m_vao(other.m_vao),
+      m_vbo(other.m_vbo),
+      m_model(other.m_model),
+      m_vertices(std::move(other.m_vertices)),
+      m_world_vertices(std::move(other.m_world_vertices)) {
+    other.m_shader = nullptr;
+    other.m_vao = 0;
+    other.m_vbo = 0;
+}
+
+Object& Object::operator=(Object&& other) noexcept {
+    if (this != &other) {
+        if (m_vao != 0) {
+            glDeleteVertexArrays(1, &m_vao);
+        }
+        if (m_vbo != 0) {
+            glDeleteBuffers(1, &m_vbo);
+        }
+        angle = other.angle;
+        pos = other.pos;
+        size = other.size;
+        center = other.center;
+        color = other.color;
+        physics_type = other.physics_type;
+        velocity = other.velocity;
+        m_shader = other.m_shader;
+        m_vao = other.m_vao;
+        m_vbo = other.m_vbo;
+        m_model = other.m_model;
+        m_vertices = std::move(other.m_vertices);
+        m_world_vertices = std::move(other.m_world_vertices);
+        other.m_shader = nullptr;
+        other.m_vao = 0;
+        other.m_vbo = 0;
+    }
+    return *this;
+}
+
 Object::~Object() {
     if (m_vao != 0) {
         glDeleteVertexArrays(1, &m_vao);
@@ -50,8 +97,30 @@ void Object::Load(std::span<const Vertex> vertices) {
         (void*)offsetof(Vertex, color)
     );
 
+    // Tex coord
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(
+        2,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(Vertex),
+        (void*)offsetof(Vertex, uv)
+    );
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+void Object::Cleanup() {
+    if (m_vao != 0) {
+        glDeleteVertexArrays(1, &m_vao);
+        m_vao = 0;
+    }
+    if (m_vbo != 0) {
+        glDeleteBuffers(1, &m_vbo);
+        m_vbo = 0;
+    }
 }
 
 void Object::UpdateModel() {
@@ -71,7 +140,6 @@ void Object::UpdateModel() {
 }
 
 void Object::Draw() {
-    using namespace glm;
     m_shader->Bind();
 
     m_shader->Set("uProj", g_proj);
@@ -99,10 +167,10 @@ std::vector<Vertex> MakeLinePoly(std::span<const Vertex> points, float line_widt
         glm::vec2 tangent = glm::normalize(p1.pos - p0.pos);
         glm::vec2 normal = glm::vec2(-tangent.y, tangent.x) * half_w;
 
-        Vertex A = { p0.pos + normal, p0.color };
-        Vertex B = { p0.pos - normal, p0.color };
-        Vertex C = { p1.pos + normal, p1.color };
-        Vertex D = { p1.pos - normal, p1.color };
+        Vertex A = { p0.pos + normal, p0.color, p0.uv };
+        Vertex B = { p0.pos - normal, p0.color, p0.uv };
+        Vertex C = { p1.pos + normal, p1.color, p1.uv };
+        Vertex D = { p1.pos - normal, p1.color, p1.uv };
 
         // ABC
         vertices.push_back(A);
@@ -117,3 +185,29 @@ std::vector<Vertex> MakeLinePoly(std::span<const Vertex> points, float line_widt
     return vertices;
 }
 
+
+// `points[last]` must NOT equal `points[first]`
+std::vector<Vertex> MakeFilledPoly(std::span<const Vertex> points) {
+    assert(points.size() >= 2);
+    std::vector<Vertex> vertices;
+
+    size_t segment_count = points.size() - 1;
+    vertices.reserve((segment_count-1) * 3); // 1 triangle per segment
+
+    Vertex A = { points[0].pos, points[0].color, points[0].uv };
+    
+    for (size_t i = 1; i < segment_count; i++) {
+        const auto& p0 = points[i];
+        const auto& p1 = points[i + 1];
+
+        Vertex B = { p0.pos, p0.color, p0.uv };
+        Vertex C = { p1.pos, p1.color, p1.uv };
+
+        //ABC
+        vertices.push_back(A);
+        vertices.push_back(B);
+        vertices.push_back(C);
+    }
+
+    return vertices;
+}

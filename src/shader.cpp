@@ -1,5 +1,20 @@
 #include "shader.hpp"
 
+Shader::Shader(Shader&& other) noexcept : m_id(other.m_id) {
+    other.m_id = 0;
+}
+
+Shader& Shader::operator=(Shader&& other) noexcept {
+    if (this != &other) {
+        if (m_id != 0) {
+            glDeleteProgram(m_id);
+        }
+        m_id = other.m_id;
+        other.m_id = 0;
+    }
+    return *this;
+}
+
 Shader::~Shader() {
     if (m_id != 0) {
         glDeleteProgram(m_id);
@@ -60,6 +75,13 @@ bool Shader::Load(const char* vertex_source, const char* fragment_source) {
 
 void Shader::Bind() {
     glUseProgram(m_id);
+}
+
+void Shader::Cleanup() {
+    if (m_id != 0) {
+        glDeleteProgram(m_id);
+        m_id = 0;
+    }
 }
 
 void Shader::Set(const char* name, const glm::vec2& value) {
