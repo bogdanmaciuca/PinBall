@@ -7,4 +7,6 @@ constexpr glm::vec2 GRAVITY(0.0f, 1500.0f);
 
 inline glm::mat4 g_proj;
 inline GLFWwindow* g_window = nullptr;
+inline int g_score = 0;
+inline int g_high_score = 0;
 

@@ -4,9 +4,9 @@
 #include "shader_sources.hpp"
 
 namespace {
-    constexpr float FLIP_ANGLE       = 0.6f;
+    constexpr float FLIP_ANGLE        = 0.6f;
     constexpr float FLIPPER_REST_TILT = 0.2;
-    constexpr float ANGULAR_SPEED    = 8.0f;
+    constexpr float ANGULAR_SPEED     = 8.0f;
 }
 
 World::World() {
@@ -66,7 +66,7 @@ World::World() {
     auto flipper_vertices = [](float direction) {
         return MakeLinePoly(std::array{
             Vertex{ .pos = glm::vec2(0.0f, 0.0f) },
-            Vertex{ .pos = glm::vec2(0.20f * direction, 0.0f) },
+            Vertex{ .pos = glm::vec2(0.15f * direction, 0.0f) },
         }, 0.04f);
     };
 
@@ -90,16 +90,16 @@ World::World() {
 
     // Obstacle balls
     std::array obstacle_positions{
-        glm::vec2(0.0f, -120.0f),
-        glm::vec2(-100.0f, 40.0f),
-        glm::vec2(100.0f, 40.0f),
+        glm::vec2(0.0f, -150.0f),
+        glm::vec2(-110.0f, 40.0f),
+        glm::vec2(110.0f, 40.0f),
     };
 
     for (const glm::vec2& position : obstacle_positions) {
         Object& obstacle = m_objects.emplace_back(&m_marble_shader, OPT_BALL);
         obstacle.Load(quad_vertices);
         obstacle.pos = position;
-        obstacle.size = glm::vec2(30.0f);
+        obstacle.size = glm::vec2(50.0f);
         obstacle.color = glm::vec4(0.9f, 0.1f, 0.0f, 1.0f);
     }
 

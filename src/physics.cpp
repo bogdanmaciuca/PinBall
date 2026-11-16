@@ -118,7 +118,9 @@ void World::UpdatePhysics(){
 
     for (size_t i = 0; i < m_objects.size(); i++) {
         if (i == m_marble_id || i == m_drain_id) continue;
-        CheckCollision(Marble(), m_objects[i]);
+        if (CheckCollision(Marble(), m_objects[i]) && m_objects[i].physics_type == OPT_BALL) {
+            g_score++;
+        }
     }
 
     Integrate(Marble());

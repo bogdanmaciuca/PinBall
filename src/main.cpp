@@ -4,6 +4,7 @@
 #include "shader_sources.hpp"
 #include "object.hpp"
 #include "world.hpp"
+#include "text.hpp"
 
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -33,9 +34,12 @@ void InitGL() {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    InitFont();
 }
 
 void DestroyGL() {
+    ShutdownFont();
     glfwTerminate();
 }
 
@@ -63,8 +67,16 @@ int main() {
             [&]() {
                 glClear(GL_COLOR_BUFFER_BIT);
                 world.Render();
+                DrawText(glm::vec2(-WND_W / 2.0f + 20.0f, -WND_H / 2.0f + 80.0f),
+                         glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+                         "Score: %d\nHigh Score: %d", g_score, g_high_score);
             }
         );
+
+        if (go) {
+            g_high_score = std::max(g_high_score, g_score);
+            g_score = 0;
+        }
     }
 
     DestroyGL();

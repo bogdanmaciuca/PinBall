@@ -34,6 +34,42 @@ constexpr const char* MARBLE_FS = R"GLSL(
     }
 )GLSL";
 
+constexpr const char* TEXT_VS = R"GLSL(
+    #version 450
+
+    layout (location = 0) in vec2 aPos;
+    layout (location = 1) in vec4 aColor;
+    layout (location = 2) in vec2 aTexCoord;
+
+    uniform mat4 uProj;
+    uniform mat4 uModel;
+
+    out vec2 FragTexCoord;
+    out vec4 FragColor;
+
+    void main() {
+        gl_Position = uProj * uModel * vec4(aPos, 0.0, 1.0);
+        FragTexCoord = aTexCoord;
+        FragColor = aColor;
+    }
+)GLSL";
+
+constexpr const char* TEXT_FS = R"GLSL(
+    #version 450
+
+    in vec2 FragTexCoord;
+    in vec4 FragColor;
+
+    uniform sampler2D uTexture;
+
+    out vec4 oFragColor;
+
+    void main() {
+        float alpha = texture(uTexture, FragTexCoord).r;
+        oFragColor = vec4(FragColor.rgb, FragColor.a * alpha);
+    }
+)GLSL";
+
 constexpr const char* BORDER_VS = R"GLSL(
     #version 450
 

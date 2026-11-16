@@ -5,6 +5,7 @@
 struct Vertex {
     glm::vec2 pos;
     glm::vec4 color;
+    glm::vec2 uv;
 };
 
 enum ObjectPhysicsType {
@@ -32,6 +33,7 @@ struct Object {
     ~Object();
     void Load(std::span<const Vertex> vertices);
     void Draw();
+    void Cleanup();
     void UpdateModel();
 
     std::span<const glm::vec2> GetWorldVertices() const { return m_world_vertices; }

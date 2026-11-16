@@ -97,8 +97,30 @@ void Object::Load(std::span<const Vertex> vertices) {
         (void*)offsetof(Vertex, color)
     );
 
+    // Tex coord
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(
+        2,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(Vertex),
+        (void*)offsetof(Vertex, uv)
+    );
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+void Object::Cleanup() {
+    if (m_vao != 0) {
+        glDeleteVertexArrays(1, &m_vao);
+        m_vao = 0;
+    }
+    if (m_vbo != 0) {
+        glDeleteBuffers(1, &m_vbo);
+        m_vbo = 0;
+    }
 }
 
 void Object::UpdateModel() {
@@ -145,10 +167,10 @@ std::vector<Vertex> MakeLinePoly(std::span<const Vertex> points, float line_widt
         glm::vec2 tangent = glm::normalize(p1.pos - p0.pos);
         glm::vec2 normal = glm::vec2(-tangent.y, tangent.x) * half_w;
 
-        Vertex A = { p0.pos + normal, p0.color };
-        Vertex B = { p0.pos - normal, p0.color };
-        Vertex C = { p1.pos + normal, p1.color };
-        Vertex D = { p1.pos - normal, p1.color };
+        Vertex A = { p0.pos + normal, p0.color, p0.uv };
+        Vertex B = { p0.pos - normal, p0.color, p0.uv };
+        Vertex C = { p1.pos + normal, p1.color, p1.uv };
+        Vertex D = { p1.pos - normal, p1.color, p1.uv };
 
         // ABC
         vertices.push_back(A);

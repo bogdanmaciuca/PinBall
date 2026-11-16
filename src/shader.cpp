@@ -77,6 +77,13 @@ void Shader::Bind() {
     glUseProgram(m_id);
 }
 
+void Shader::Cleanup() {
+    if (m_id != 0) {
+        glDeleteProgram(m_id);
+        m_id = 0;
+    }
+}
+
 void Shader::Set(const char* name, const glm::vec2& value) {
     glUniform2fv(glGetUniformLocation(m_id, name), 1, &value[0]);
 }
