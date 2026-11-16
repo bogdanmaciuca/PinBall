@@ -97,3 +97,8 @@ it calculates the following formula $\frac{(p-a) \cdot (b-a)}{||b-a||^2}$ in ord
  - Apply drag.
  - Apply gravity.
  - Modify the position.
+
+# Contributions
+- Bogdan Maciuca: Object, Shader, MainLoop, MakeLinePoly, shader sources, paddles
+- Andrei Barbu: Physics, game reset, MakeFilledPoly, shader sources, gameplay refined
+
